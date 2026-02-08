@@ -1,0 +1,18 @@
+{
+  "pair": "BTC/USDT",
+  "currentPrice": 69328,
+  "entryPoint": "68634.72000000",
+  "stopLoss": "70714.56000000",
+  "takeProfit": "64475.04000000",
+  "analysis": "Technical Analysis for BTC/USDT:\n- Current Price: 69328.00\n- 24h Change: -1.65%\n- Trend: BEARISH\n- RSI(14): 49.2\n- MACD Signal: BEARISH\n- Volatility: 1.65%\n- Moving Average (50): 69898.31\n\nEntry positioned at optimal risk level with medium conviction.",
+  "confidence": "Medium",
+  "winProbability": "64.1",
+  "details": {
+    "trend": "BEARISH",
+    "rsi": "49.2",
+    "macd": "BEARISH",
+    "movingAverage": "69898.31",
+    "volatility": "1.65",
+    "priceChange24h": -1.645258577278633
+  }
+}

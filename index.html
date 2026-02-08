@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main - Chart Analyzer Suite</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 50px;
+    }
+
+    header h1 {
+      font-size: 3.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 12px;
+      padding: 40px 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .feature-icon {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+    }
+
+    .feature-card p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 2em;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 15px;
+    }
+
+    .section p {
+      color: #666;
+      line-height: 1.8;
+      font-size: 1.05em;
+      margin-bottom: 15px;
+    }
+
+    .features-list {
+      list-style: none;
+      margin-top: 20px;
+    }
+
+    .features-list li {
+      padding: 10px 0;
+      padding-left: 30px;
+      position: relative;
+      color: #333;
+    }
+
+    .features-list li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #667eea;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .setup-steps {
+      background: #f8f9ff;
+      padding: 30px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .step {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .step:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 35px;
+      height: 35px;
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 35px;
+      font-weight: bold;
+      margin-right: 15px;
+    }
+
+    .step-content {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .step-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .step-desc {
+      color: #666;
+      font-size: 0.95em;
+    }
+
+    .code-block {
+      background: #222;
+      color: #0f0;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.5em;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎯 Chart Analyzer Suite</h1>
+      <p>AI-Powered Trading Chart Analysis</p>
+    </header>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Upload Charts</h3>
+        <p>Easily upload your trading charts in any image format</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>Dual AI Analysis</h3>
+        <p>Get insights from both Claude AI and DeepSeek simultaneously</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💡</div>
+        <h3>Trading Signals</h3>
+        <p>Receive entry points, stop loss, and take profit recommendations</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🚀 Get Started</h2>
+      <p style="text-align: center; margin-bottom: 30px;">
+        <a href="/pair-analyzer" class="cta-btn">Open Chart Analyzer →</a>
+      </p>
+      <p>Click the button above to start analyzing your trading charts with AI-powered insights.</p>
+    </div>
+
+    <div class="section">
+      <h2>📋 Features</h2>
+      <ul class="features-list">
+        <li>Upload chart images (PNG, JPG, GIF, etc.)</li>
+        <li>Dual AI analysis from Claude and DeepSeek</li>
+        <li>Entry point recommendations</li>
+        <li>Stop loss level calculations</li>
+        <li>Take profit target suggestions</li>
+        <li>Confidence ratings from each AI</li>
+        <li>Individual AI analysis comparison</li>
+        <li>Fast processing with parallel API calls</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>⚙️ Setup Instructions</h2>
+      <div class="setup-steps">
+        <div class="step">
+          <span class="step-number">1</span>
+          <div class="step-content">
+            <div class="step-title">Get API Keys</div>
+            <div class="step-desc">
+              Sign up for API keys from:
+              <ul style="margin-top: 8px; margin-left: 20px;">
+                <li><strong>Claude AI:</strong> <a href="https://console.anthropic.com/" target="_blank" style="color: #667eea;">console.anthropic.com</a></li>
+                <li><strong>DeepSeek:</strong> <a href="https://platform.deepseek.com/" target="_blank" style="color: #667eea;">platform.deepseek.com</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-number">2</span>
+          <div class="step-content">
+            <div class="step-title">Configure Environment</div>
+            <div class="step-desc">
+              Update the <code>.env</code> file with your API keys:
+              <div class="code-block">CLAUDE_API_KEY=your_key_here
+DEEPSEEK_API_KEY=your_key_here
+PORT=3000</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-number">3</span>
+          <div class="step-content">
+            <div class="step-title">Install Dependencies</div>
+            <div class="step-desc">
+              Run the following command:
+              <div class="code-block">npm install</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-number">4</span>
+          <div class="step-content">
+            <div class="step-title">Start Server</div>
+            <div class="step-desc">
+              Start the application:
+              <div class="code-block">npm start</div>
+              Then navigate to <code>http://localhost:3000</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-number">5</span>
+          <div class="step-content">
+            <div class="step-title">Upload & Analyze</div>
+            <div class="step-desc">
+              Go to the <a href="/pair-analyzer" style="color: #667eea;">chart analyzer</a> and upload your trading charts to get instant AI-powered analysis!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📖 How It Works</h2>
+      <p>
+        <strong>1. Upload Chart:</strong> Select and upload an image of your trading chart.
+      </p>
+      <p>
+        <strong>2. AI Analysis:</strong> Your chart is sent to both Claude AI and DeepSeek simultaneously for analysis.
+      </p>
+      <p>
+        <strong>3. Technical Review:</strong> Both AI models analyze the chart and identify:
+      </p>
+      <ul class="features-list">
+        <li><strong>Entry Point:</strong> The optimal price level to enter a position</li>
+        <li><strong>Stop Loss:</strong> Recommended price level to limit losses</li>
+        <li><strong>Take Profit:</strong> Target price level for profit realization</li>
+      </ul>
+      <p>
+        <strong>4. Results:</strong> You receive a combined recommendation plus individual AI analyses for comparison.
+      </p>
+    </div>
+
+    <div class="section" style="background: #f0f4ff; border-top: 4px solid #667eea;">
+      <h2>⚠️ Disclaimer</h2>
+      <p>
+        This tool provides AI-generated analysis for educational purposes only. Trading and investing involve risk of loss. Always conduct your own research and consult with a professional financial advisor before making trading decisions. The AI recommendations are not financial advice and should not be the sole basis for your trading strategy.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

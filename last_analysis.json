@@ -1,0 +1,36 @@
+{
+  "local": {
+    "entryPoint": "42017",
+    "stopLoss": "41813",
+    "takeProfit": "42323",
+    "analysis": "Advanced Chart Analysis:\n- Primary Trend: BULLISH (Strength: 1.5%)\n- Volatility Level: 18.8%\n- Pattern Strength: 26.0%\n- Support Level: 34.0% brightness\n- Resistance Level: 59.5% brightness\n- Risk/Reward Ratio: 1.50:1\n\nEntry positioned at key level with optimal risk/reward setup.\nPattern shows low conviction.",
+    "confidence": "Low",
+    "method": "local-pattern-detection",
+    "details": {
+      "trendDirection": "bullish",
+      "trendStrength": "1.5",
+      "volatility": "18.8",
+      "patternStrength": "26.0",
+      "riskRewardRatio": "1.50",
+      "basePrice": 42000,
+      "estimatedRange": "510"
+    }
+  },
+  "combined": {
+    "entryPoint": "42017",
+    "stopLoss": "41813",
+    "takeProfit": "42323",
+    "analysis": "Advanced Chart Analysis:\n- Primary Trend: BULLISH (Strength: 1.5%)\n- Volatility Level: 18.8%\n- Pattern Strength: 26.0%\n- Support Level: 34.0% brightness\n- Resistance Level: 59.5% brightness\n- Risk/Reward Ratio: 1.50:1\n\nEntry positioned at key level with optimal risk/reward setup.\nPattern shows low conviction.",
+    "confidence": "Low",
+    "method": "local-pattern-detection",
+    "details": {
+      "trendDirection": "bullish",
+      "trendStrength": "1.5",
+      "volatility": "18.8",
+      "patternStrength": "26.0",
+      "riskRewardRatio": "1.50",
+      "basePrice": 42000,
+      "estimatedRange": "510"
+    }
+  }
+}

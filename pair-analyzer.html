@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Pair Analyzer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .nav-link {
+      display: inline-block;
+      margin-left: 20px;
+      margin-top: 15px;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    #pairInput {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    #pairInput:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .results {
+      display: none;
+    }
+
+    .trade-box {
+      background: #f8f9ff;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border-left: 5px solid #667eea;
+    }
+
+    .price-levels {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .level {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 2px solid #667eea;
+    }
+
+    .level-label {
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .level-value {
+      font-size: 1.8em;
+      color: #667eea;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .current-price {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .win-probability {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .probability-value {
+      font-size: 3.5em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .probability-label {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .prob-high {
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    }
+
+    .prob-medium {
+      background: linear-gradient(135deg, #ff9800 0%, #e68900 100%);
+    }
+
+    .prob-low {
+      background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
+    }
+
+    .analysis-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .analysis-section h3 {
+      color: #333;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .analysis-text {
+      color: #666;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95em;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .metric {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .metric-label {
+      color: #999;
+      font-size: 0.85em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      color: #333;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    .confidence {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9em;
+      margin-top: 15px;
+    }
+
+    .confidence.high {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .confidence.medium {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .confidence.low {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      border-left: 4px solid #f5c6cb;
+    }
+
+    #error {
+      display: none;
+    }
+
+    .hint {
+      color: #999;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.8em;
+      }
+
+      .price-levels {
+        grid-template-columns: 1fr;
+      }
+
+      .probability-value {
+        font-size: 2.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📈 Trading Pair Analyzer</h1>
+      <p>Enter any trading pair and get AI-powered analysis with win probability</p>
+      <a href="/" class="nav-link">← Back to Home</a>
+    </header>
+
+    <div class="card">
+      <h2>🔍 Analyze Trading Pair</h2>
+      <div class="input-group">
+        <input 
+          type="text" 
+          id="pairInput" 
+          placeholder="Enter trading pair (e.g., BTC/USDT, ETH/USDT, XRP/USDT)"
+          autocomplete="off"
+        >
+        <button class="btn" id="analyzeBtn">Analyze</button>
+      </div>
+      <p class="hint">💡 Examples: BTC/USDT, ETH/USDT, XRP/USDT, ADA/USDT</p>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Analyzing trading pair...</p>
+      </div>
+
+      <div id="error"></div>
+
+      <div class="results" id="results">
+        <!-- Win Probability -->
+        <div class="win-probability" id="probBox">
+          <div class="probability-value" id="probValue">—</div>
+          <div class="probability-label">Probability of Success</div>
+        </div>
+
+        <!-- Price Levels -->
+        <div class="price-levels">
+          <div class="level current-price">
+            <div class="level-label">Current Price</div>
+            <div class="level-value" id="currentPrice">—</div>
+          </div>
+          <div class="level">
+            <div class="level-label">Entry Point</div>
+            <div class="level-value" id="entryPoint">—</div>
+          </div>
+          <div class="level">
+            <div class="level-label">Stop Loss</div>
+            <div class="level-value" id="stopLoss">—</div>
+          </div>
+          <div class="level">
+            <div class="level-label">Take Profit</div>
+            <div class="level-value" id="takeProfit">—</div>
+          </div>
+        </div>
+
+        <!-- Confidence -->
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span class="confidence" id="confidence"></span>
+        </div>
+
+        <!-- Technical Metrics -->
+        <div class="analysis-section">
+          <h3>📊 Technical Metrics</h3>
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-label">Trend</div>
+              <div class="metric-value" id="trend">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">RSI(14)</div>
+              <div class="metric-value" id="rsi">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">MACD</div>
+              <div class="metric-value" id="macd">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Volatility</div>
+              <div class="metric-value" id="volatility">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">24h Change</div>
+              <div class="metric-value" id="change24h">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis -->
+        <div class="analysis-section">
+          <h3>💭 Detailed Analysis</h3>
+          <div class="analysis-text" id="analysisText"></div>
+        </div>
+
+        <button class="btn" style="width: 100%; margin-top: 20px;" id="resetBtn">Analyze Another Pair</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pairInput = document.getElementById('pairInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const errorDiv = document.getElementById('error');
+    const resetBtn = document.getElementById('resetBtn');
+
+    analyzeBtn.addEventListener('click', () => {
+      const pair = pairInput.value.trim().toUpperCase();
+      if (!pair) {
+        showError('Please enter a trading pair');
+        return;
+      }
+      analyzePair(pair);
+    });
+
+    pairInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        analyzeBtn.click();
+      }
+    });
+
+    async function analyzePair(pair) {
+      loading.style.display = 'block';
+      results.style.display = 'none';
+      errorDiv.innerHTML = '';
+
+      try {
+        console.log('Sending request for pair:', pair);
+        const response = await fetch('/api/analyze-pair', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pair }),
+          timeout: 30000
+        });
+
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (!response.ok) {
+          throw new Error(data.error || `HTTP ${response.status}: Analysis failed`);
+        }
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        displayResults(data);
+      } catch (error) {
+        console.error('Error:', error);
+        showError('Error: ' + error.message);
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    function displayResults(data) {
+      if (data.error) {
+        showError(data.error);
+        return;
+      }
+
+      // Format price like trading platforms with subscript zeros
+      function formatPrice(price) {
+        if (!price || price === 0) return '—';
+        
+        if (price >= 1) {
+          return price.toFixed(2);
+        } else if (price >= 0.01) {
+          return price.toFixed(4);
+        } else {
+          // For very small prices, show with subscript notation like: 0.0₅286
+          const priceStr = price.toString();
+          const match = priceStr.match(/0\.0+(\d+)/);
+          
+          if (match) {
+            const zeros = priceStr.match(/0\.0+/)[0].length - 2; // Count zeros after decimal
+            const significant = match[1];
+            return `0.0<sub>${zeros}</sub>${significant}`;
+          }
+          return price.toExponential(2);
+        }
+      }
+
+      // Price levels - use innerHTML for subscript notation
+      const formattedPrice = formatPrice(data.currentPrice);
+      document.getElementById('currentPrice').innerHTML = formattedPrice === '—' ? '—' : formattedPrice;
+      
+      // Format entry/stop/take profit with appropriate decimals
+      const formatTradingLevel = (value) => {
+        if (!value || value === '—') return '—';
+        const num = parseFloat(value);
+        if (isNaN(num) || num === 0) return '—';
+        if (num >= 1) return num.toFixed(2);
+        if (num >= 0.01) return num.toFixed(4);
+        
+        // For very small values, use subscript notation
+        // Convert to fixed string with enough decimals first
+          const str = num.toFixed(10); // Get full precision
+          const parts = str.split('.');
+          if (parts.length !== 2) return str;
+        
+          const decimals = parts[1];
+          const zeroMatch = decimals.match(/^0+/);
+        
+          if (zeroMatch && decimals.length > zeroMatch[0].length) {
+            const zeroCount = zeroMatch[0].length;
+            const significant = decimals.substring(zeroCount);
+            return `0.0<sub>${zeroCount}</sub>${significant.replace(/0+$/, '')}`;
+          }
+          return str;
+      };
+      
+      document.getElementById('entryPoint').innerHTML = formatTradingLevel(data.entryPoint);
+      document.getElementById('stopLoss').innerHTML = formatTradingLevel(data.stopLoss);
+      document.getElementById('takeProfit').innerHTML = formatTradingLevel(data.takeProfit);
+
+      // Win probability with color coding
+      const prob = parseFloat(data.winProbability);
+      document.getElementById('probValue').textContent = data.winProbability + '%';
+      
+      const probBox = document.getElementById('probBox');
+      probBox.className = 'win-probability';
+      if (prob >= 70) {
+        probBox.classList.add('prob-high');
+      } else if (prob >= 50) {
+        probBox.classList.add('prob-medium');
+      } else {
+        probBox.classList.add('prob-low');
+      }
+
+      // Confidence
+      const confEl = document.getElementById('confidence');
+      confEl.textContent = data.confidence || 'Medium';
+      confEl.className = 'confidence ' + (data.confidence || 'medium').toLowerCase();
+
+      // Technical metrics
+      document.getElementById('trend').textContent = data.details.trend || '—';
+      document.getElementById('rsi').textContent = data.details.rsi || '—';
+      document.getElementById('macd').textContent = data.details.macd || '—';
+      document.getElementById('volatility').textContent = (data.details.volatility || '0') + '%';
+      document.getElementById('change24h').textContent = (data.details.priceChange24h || 0).toFixed(2) + '%';
+
+      // Analysis text
+      document.getElementById('analysisText').textContent = data.analysis || 'N/A';
+
+      results.style.display = 'block';
+    }
+
+    function showError(message) {
+      errorDiv.innerHTML = `<div class="error">${message}</div>`;
+      results.style.display = 'none';
+    }
+
+    resetBtn.addEventListener('click', () => {
+      pairInput.value = '';
+      results.style.display = 'none';
+      errorDiv.innerHTML = '';
+      pairInput.focus();
+    });
+
+    // Focus input on load
+    pairInput.focus();
+  </script>
+</body>
+</html>

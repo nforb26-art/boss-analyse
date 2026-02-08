@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Chart Analyzer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .nav-link {
+      display: inline-block;
+      margin-left: 20px;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .upload-area {
+      border: 3px dashed #667eea;
+      border-radius: 8px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f8f9ff;
+    }
+
+    .upload-area:hover {
+      border-color: #764ba2;
+      background: #f0f1ff;
+    }
+
+    .upload-area.dragover {
+      border-color: #764ba2;
+      background: #e8e9ff;
+    }
+
+    .upload-area p {
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    #chartInput {
+      display: none;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .upload-btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .upload-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .preview {
+      margin-top: 20px;
+      max-height: 300px;
+      display: none;
+    }
+
+    .preview img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .results {
+      display: none;
+    }
+
+    .result-item {
+      background: #f8f9ff;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+
+    .result-item h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .value-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .value {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+      border: 2px solid #667eea;
+    }
+
+    .value-label {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .value-amount {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .analysis-text {
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 15px;
+      white-space: pre-wrap;
+    }
+
+    .confidence {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+
+    .confidence.high {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .confidence.medium {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .confidence.low {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      border-left: 4px solid #f5c6cb;
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      border-left: 4px solid #c3e6cb;
+    }
+
+    .comparison {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #eee;
+    }
+
+    .comparison h4 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .ai-analysis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .ai-result {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    .ai-result h5 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+    }
+
+    .ai-result p {
+      font-size: 0.9em;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .reset-btn {
+      padding: 12px 24px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .reset-btn:hover {
+      background: #5a6268;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .value-box {
+        grid-template-columns: 1fr;
+      }
+
+      .ai-analysis {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📊 Trading Chart Analyzer</h1>
+      <p>Upload your chart and get AI-powered trading insights</p>
+      <a href="/" class="nav-link">← Back to Home</a>
+    </header>
+
+    <div class="main-grid">
+      <!-- Upload Section -->
+      <div class="card">
+        <h2>📤 Upload Chart</h2>
+        <div class="upload-area" id="uploadArea">
+          <p>📁 Drag and drop your chart image here</p>
+          <p>or</p>
+          <button class="upload-btn" id="uploadBtn">Select Chart Image</button>
+          <input type="file" id="chartInput" accept="image/*">
+          <div class="preview" id="preview">
+            <img id="previewImg" alt="Chart preview">
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="card">
+        <h2>📈 Analysis Results</h2>
+        
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Analyzing chart with Claude AI and DeepSeek...</p>
+        </div>
+
+        <div class="results" id="results">
+          <div class="result-item" id="combinedResult">
+            <h3>🎯 Combined Analysis</h3>
+            <div class="value-box">
+              <div class="value">
+                <div class="value-label">Entry Point</div>
+                <div class="value-amount" id="entryPoint">—</div>
+              </div>
+              <div class="value">
+                <div class="value-label">Stop Loss</div>
+                <div class="value-amount" id="stopLoss">—</div>
+              </div>
+              <div class="value">
+                <div class="value-label">Take Profit</div>
+                <div class="value-amount" id="takeProfit">—</div>
+              </div>
+            </div>
+            <div class="analysis-text" id="analysisText"></div>
+            <span class="confidence" id="confidence"></span>
+          </div>
+
+          <div class="comparison" id="comparison">
+            <h4>🤖 Individual AI Analysis</h4>
+            <div class="ai-analysis">
+              <div class="ai-result" id="claudeResult">
+                <h5>Claude AI</h5>
+                <div id="claudeContent"></div>
+              </div>
+              <div class="ai-result" id="deepseekResult">
+                <h5>DeepSeek</h5>
+                <div id="deepseekContent"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="reset-btn" id="resetBtn">Analyze Another Chart</button>
+        </div>
+
+        <div id="error"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const chartInput = document.getElementById('chartInput');
+    const preview = document.getElementById('preview');
+    const previewImg = document.getElementById('previewImg');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const errorDiv = document.getElementById('error');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // Upload button click
+    uploadBtn.addEventListener('click', () => chartInput.click());
+
+    // File input change
+    chartInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        handleFile(file);
+      } else {
+        showError('Please drop an image file');
+      }
+    });
+
+    function handleFile(file) {
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+
+      // Analyze chart
+      analyzeChart(file);
+    }
+
+    async function analyzeChart(file) {
+      const formData = new FormData();
+      formData.append('chart', file);
+
+      loading.style.display = 'block';
+      results.style.display = 'none';
+      errorDiv.innerHTML = '';
+
+      try {
+        const response = await fetch('/api/analyze-chart', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Analysis failed');
+        }
+
+        const data = await response.json();
+        displayResults(data);
+      } catch (error) {
+        showError('Error analyzing chart: ' + error.message);
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    function displayResults(data) {
+      const combined = data.combined;
+
+      // Display combined results
+      document.getElementById('entryPoint').textContent = formatValue(combined.entryPoint);
+      document.getElementById('stopLoss').textContent = formatValue(combined.stopLoss);
+      document.getElementById('takeProfit').textContent = formatValue(combined.takeProfit);
+      document.getElementById('analysisText').textContent = combined.analysis || 'See individual AI analysis for details.';
+
+      const confidenceEl = document.getElementById('confidence');
+      confidenceEl.textContent = combined.confidence || 'Medium';
+      confidenceEl.className = 'confidence ' + (combined.confidence || 'medium').toLowerCase();
+
+      // Display Claude results
+      displayAIResult('claude', data.claude);
+
+      // Display DeepSeek results
+      displayAIResult('deepseek', data.deepseek);
+
+      results.style.display = 'block';
+    }
+
+    function displayAIResult(aiName, result) {
+      const contentDiv = document.getElementById(aiName + 'Content');
+      
+      if (result.error) {
+        contentDiv.innerHTML = `<p style="color: #dc3545;">${result.error}</p>`;
+        return;
+      }
+
+      let html = '<div style="font-size: 0.85em;">';
+      
+      if (result.entryPoint) {
+        html += `<p><strong>Entry:</strong> ${formatValue(result.entryPoint)}</p>`;
+      }
+      if (result.stopLoss) {
+        html += `<p><strong>Stop Loss:</strong> ${formatValue(result.stopLoss)}</p>`;
+      }
+      if (result.takeProfit) {
+        html += `<p><strong>Take Profit:</strong> ${formatValue(result.takeProfit)}</p>`;
+      }
+      if (result.confidence) {
+        html += `<p><strong>Confidence:</strong> ${result.confidence}</p>`;
+      }
+      if (result.analysis) {
+        html += `<p style="margin-top: 10px; font-style: italic;">${result.analysis}</p>`;
+      }
+      if (result.raw) {
+        html += `<p style="margin-top: 10px; font-style: italic;">${result.raw}</p>`;
+      }
+      
+      html += '</div>';
+      contentDiv.innerHTML = html;
+    }
+
+    function formatValue(value) {
+      if (!value) return '—';
+      return String(value);
+    }
+
+    function showError(message) {
+      errorDiv.innerHTML = `<div class="error">${message}</div>`;
+      results.style.display = 'none';
+    }
+
+    resetBtn.addEventListener('click', () => {
+      chartInput.value = '';
+      preview.style.display = 'none';
+      results.style.display = 'none';
+      errorDiv.innerHTML = '';
+      loading.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
